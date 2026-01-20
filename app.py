@@ -4,7 +4,16 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sharehouse.db'
+
+# 데이터베이스 설정 - Vercel에서는 환경 변수 사용
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # Vercel 배포 환경
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    # 로컬 개발 환경
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sharehouse.db'
+    
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
