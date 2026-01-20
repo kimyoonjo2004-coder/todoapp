@@ -6,12 +6,15 @@ import os
 app = Flask(__name__)
 
 # 데이터베이스 설정 - Vercel에서는 환경 변수 사용
-database_url = os.environ.get('DATABASE_URL')
+database_url = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
 if database_url:
-    # Vercel 배포 환경
+    # Vercel 배포 환경 (PostgreSQL)
+    # postgres:// -> postgresql:// 변환 (SQLAlchemy 호환성)
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-    # 로컬 개발 환경
+    # 로컬 개발 환경 (SQLite)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sharehouse.db'
     
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
